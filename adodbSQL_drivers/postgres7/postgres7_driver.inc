@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ADOdb Lite is a PHP class to encapsulate multiple database APIs and is compatible with 
- * a subset of the ADODB Command Syntax. 
+ * ADOdb Lite is a PHP class to encapsulate multiple database APIs and is compatible with
+ * a subset of the ADODB Command Syntax.
  * Currently supports Frontbase, MaxDB, miniSQL, MSSQL, MSSQL Pro, MySQLi, MySQLt, MySQL, PostgresSQL,
  * PostgresSQL64, PostgresSQL7, SqLite and Sybase.
- * 
+ *
  */
 
 class postgres7_driver_ADOConnection extends ADOConnection
@@ -23,8 +23,8 @@ class postgres7_driver_ADOConnection extends ADOConnection
 
 	/**
 	 * Connection to database server and selected database
-	 * 
-	 * @access private 
+	 *
+	 * @access private
 	 */
 
 	function _connect($host = "", $username = "", $password = "", $database = "", $persistent, $forcenew)
@@ -35,7 +35,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 		$this->username = $this->query_addslashes($username);
 		$this->password = $this->query_addslashes($password);
 		if (strlen($database) == 0) $database = 'template1';
-		$this->database = $this->query_addslashes($database);		
+		$this->database = $this->query_addslashes($database);
 
 		if ($this->username || $this->password || $this->database) {
 			$this->connect_string = $this->host;
@@ -62,13 +62,13 @@ class postgres7_driver_ADOConnection extends ADOConnection
 
 		if ($this->connectionId === false)
 		{
-			if ($fn = $this->raiseErrorFn) 
+			if ($fn = $this->raiseErrorFn)
 				$fn($this->dbtype, 'CONNECT', $this->ErrorNo(), $this->ErrorMsg(), $this->host, $this->database, $this);
 			return $this->SelectDB( $this->database );
 		}
 
 		return true;
-	} 
+	}
 
 	function _makeconnection()
 	{
@@ -120,7 +120,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 				if ($result === false) { // error handling if query fails
 					$this->connectionId = false;
 					return false;
-				} 
+				}
 
 				$this->_makeconnection();
 				if($this->connectionId === false)
@@ -140,12 +140,12 @@ class postgres7_driver_ADOConnection extends ADOConnection
 		{
 			return true;
 		}
-	} 
+	}
 
 	/**
 	 * Return database error message
 	 * Usage: $errormessage =& $db->ErrorMsg();
-	 * 
+	 *
 	 * @access public
 	 */
 
@@ -157,44 +157,44 @@ class postgres7_driver_ADOConnection extends ADOConnection
 	/**
 	 * Return database error number
 	 * Usage: $errorbo =& $db->ErrorNo();
-	 * 
+	 *
 	 * @access public
 	 */
 
 	function ErrorNo()
 	{
-		$error = @pg_last_error( $this->connectionId );
+		$error = @pg_last_error($this->connectionId);
 		return strlen($error) ? $error : 0;
 	}
 
 	/**
 	 * Returns # of affected rows from insert/delete/update query
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 * @return integer Affected rows
 	 */
 
 	function Affected_Rows()
 	{
-		return @pg_affected_rows( $this->record_set );
-	} 
+		return @pg_affected_rows($this->record_set->recordId);
+	}
 
 	/**
 	 * Returns the last record id of an inserted item
 	 * Usage: $db->Insert_ID();
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 */
 
 	function Insert_ID()
 	{
-		return @pg_getlastoid($this->record_set);
+		return @pg_getlastoid($this->record_set->recordId);
 	}
 
 	/**
 	 * Correctly quotes a string so that all strings are escape coded.
 	 * An example is  $db->qstr("Haven't a clue.");
-	 * 
+	 *
 	 * @param string			the string to quote
 	 * @param [magic_quotes]	if $s is GET/POST var, set to get_magic_quotes_gpc().
 	 *
@@ -202,7 +202,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 	 */
 
 	function qstr($string, $magic_quotes=false)
-	{	
+	{
 		if (!$magic_quotes) {
 			if (strnatcmp(PHP_VERSION, '4.2.0') >= 0  && $this->pg_escape_enable) {
 				return "'" . pg_escape_string($string) . "'";
@@ -221,7 +221,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 	/**
 	 * Returns concatenated string
 	 * Usage: $db->Concat($str1,$str2);
-	 * 
+	 *
 	 * @return concatenated string
 	 */
 	function Concat()
@@ -230,21 +230,21 @@ class postgres7_driver_ADOConnection extends ADOConnection
 		return implode("||", $arr);
 	}
 
-	function IfNull( $field, $ifNull ) 
+	function IfNull( $field, $ifNull )
 	{
-		return " coalesce($field, $ifNull) "; 
+		return " coalesce($field, $ifNull) ";
 	}
 
 	/**
 	 * Closes database connection
 	 * Usage: $db->close();
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 */
 
 	function Close()
 	{
-		@pg_close( $this->connectionId );
+		@pg_close($this->connectionId);
 		$this->connectionId = false;
 	}
 
@@ -252,7 +252,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 	 * Returns All Records in an array
 	 *
 	 * Usage: $db->GetAll($sql);
-	 * @access public 
+	 * @access public
 	 */
 
 	function &GetAll($sql, $inputarr = false)
@@ -265,7 +265,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 	 * Returns All Records in an array
 	 *
 	 * Usage: $db->GetArray($sql);
-	 * @access public 
+	 * @access public
 	 */
 
 	function &GetArray($sql, $inputarr = false)
@@ -282,8 +282,8 @@ class postgres7_driver_ADOConnection extends ADOConnection
 
 	/**
 	 * Executes SQL query and instantiates resultset methods
-	 * 
-	 * @access private 
+	 *
+	 * @access private
 	 * @return mixed Resultset methods
 	 */
 
@@ -326,7 +326,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 					$i += 1;
 				}
 				$sql .= $sqlarr[$i];
-				if ($i+1 != sizeof($sqlarr))	
+				if ($i+1 != sizeof($sqlarr))
 					return $false;
 				$this->sql = $sql . "$limitStr$offsetStr";
 				$time_start = array_sum(explode(' ', microtime()));
@@ -348,7 +348,7 @@ class postgres7_driver_ADOConnection extends ADOConnection
 					if ($fn = $this->raiseErrorFn)
 						$fn($this->dbtype, 'EXECUTE', $this->ErrorNo(), $this->ErrorMsg(), $this->sql, $inputarr, $this);
 					return $false;
-				} 
+				}
 			}
 		}
 		else
@@ -375,13 +375,16 @@ class postgres7_driver_ADOConnection extends ADOConnection
 			if ($fn = $this->raiseErrorFn)
 				$fn($this->dbtype, 'EXECUTE', $this->ErrorNo(), $this->ErrorMsg(), $this->sql, $inputarr, $this);
 			return $false;
-		} 
+		}
 
+	// This causes problems with things like Affected_Rows() which no longer has access to the $resultId
+	/*
 		if (@pg_numfields( $resultId ) <= 0) { // return simplified recordset for inserts/updates/deletes with lower overhead
 			$recordset = new ADORecordSet_empty();
 			$this->record_set = $recordset;
 			return $recordset;
 		}
+	*/
 
 		$resultset_name = $this->last_module_name . "_ResultSet";
 		$recordset = new $resultset_name( $resultId, $this->connectionId );
@@ -407,8 +410,8 @@ class postgres7_driver_ADOConnection extends ADOConnection
 		$recordset->_fetch();
 
 		return $recordset;
-	} 
-} 
+	}
+}
 
 class postgres7_driver_ResultSet
 {
@@ -423,10 +426,10 @@ class postgres7_driver_ResultSet
 
 	/**
 	 * pgsqlResultSet Constructor
-	 * 
-	 * @access private 
-	 * @param string $record 
-	 * @param string $resultId 
+	 *
+	 * @access private
+	 * @param string $record
+	 * @param string $resultId
 	 */
 
 	function postgres7_driver_ResultSet( $resultId, $connectionId )
@@ -436,12 +439,12 @@ class postgres7_driver_ResultSet
 		$this->record = array();
 		$this->resultId = $resultId;
 		$this->EOF = false;
-	} 
+	}
 
 	/**
 	 * Frees resultset
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 */
 
 	function Close()
@@ -449,12 +452,12 @@ class postgres7_driver_ResultSet
 		pg_free_result( $this->resultId );
 		$this->fields = array();
 		$this->resultId = false;
-	} 
+	}
 
 	/**
 	 * Returns field name from select query
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 * @param string $field
 	 * @return string Field name
 	 */
@@ -469,19 +472,19 @@ class postgres7_driver_ResultSet
 		{
 			return $this->fields[$field];
 		}
-	} 
+	}
 
 	/**
 	 * Returns numrows from select query
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 * @return integer Numrows
 	 */
 
 	function RecordCount()
 	{
 		return $this->_numOfRows;
-	} 
+	}
 
 	/**
 	* PEAR DB Compatable Command
@@ -493,15 +496,15 @@ class postgres7_driver_ResultSet
 
 	/**
 	 * Returns num of fields from select query
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 * @return integer numfields
 	 */
 
 	function FieldCount()
 	{
 		return $this->_numOfFields;
-	} 
+	}
 
 	/**
 	* PEAR DB Compatable Command
@@ -513,8 +516,8 @@ class postgres7_driver_ResultSet
 
 	/**
 	 * Returns next record
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 */
 
 	function MoveNext()
@@ -528,7 +531,7 @@ class postgres7_driver_ResultSet
 			$this->EOF = true;
 		}
 		return false;
-	} 
+	}
 
 	/**
 	 * Move to the first row in the recordset. Many databases do NOT support this.
@@ -536,23 +539,23 @@ class postgres7_driver_ResultSet
 	 * @return true or false
 	 */
 
-	function MoveFirst() 
+	function MoveFirst()
 	{
 		if ($this->_currentRow == 0) return true;
-		return $this->Move(0);			
-	}			
+		return $this->Move(0);
+	}
 
 	/**
 	 * Returns the Last Record
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 */
 
 	function MoveLast()
 	{
 		if ($this->EOF) return false;
 		return $this->Move($this->_numOfRows - 1);
-	} 
+	}
 
 	/**
 	 * Random access to a specific row in the recordset. Some databases do not support
@@ -563,7 +566,7 @@ class postgres7_driver_ResultSet
 	 * @return true if there still rows available, or false if there are no more rows (EOF).
 	 */
 
-	function Move($rowNumber = 0) 
+	function Move($rowNumber = 0)
 	{
 		if ($rowNumber == $this->_currentRow) return true;
 		$this->EOF = false;
@@ -578,7 +581,7 @@ class postgres7_driver_ResultSet
 			if ($this->_fetch()) {
 				return true;
 			}
-			$this->fields = false;	
+			$this->fields = false;
 		}
 		$this->EOF = true;
 		return false;
@@ -586,8 +589,8 @@ class postgres7_driver_ResultSet
 
 	/**
 	 * Perform Seek to specific row
-	 * 
-	 * @access private 
+	 *
+	 * @access private
 	 */
 
 	function _seek($row)
@@ -598,8 +601,8 @@ class postgres7_driver_ResultSet
 
 	/**
 	 * Fills field array with first database element when query initially executed
-	 * 
-	 * @access private 
+	 *
+	 * @access private
 	 */
 
 	function _fetch()
@@ -610,8 +613,8 @@ class postgres7_driver_ResultSet
 
 	/**
 	 * Check to see if last record reached
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 */
 
 	function EOF()
@@ -625,12 +628,12 @@ class postgres7_driver_ResultSet
 			$this->EOF = true;
 			return true;
 		}
-	} 
+	}
 
 	/**
 	 * Returns All Records in an array
-	 * 
-	 * @access public 
+	 *
+	 * @access public
 	 * @param [nRows]  is the number of rows to return. -1 means every row.
 	 */
 
@@ -644,9 +647,9 @@ class postgres7_driver_ResultSet
 			$cnt++;
 		}
 		return $results;
-	} 
+	}
 
-	function &GetRows($nRows = -1) 
+	function &GetRows($nRows = -1)
 	{
 		$arr =& $this->GetArray($nRows);
 		return $arr;
@@ -659,11 +662,11 @@ class postgres7_driver_ResultSet
 	}
 
 	/**
-	* Fetch field information for a table. 
+	* Fetch field information for a table.
 	*
 	* @return object containing the name, type and max_length
 	*/
-	function FetchField($fieldOffset = -1) 
+	function FetchField($fieldOffset = -1)
 	{
 		$fieldObject= new ADOFieldObject();
 		$fieldObject->name = @pg_fieldname($this->resultId, $fieldOffset);
